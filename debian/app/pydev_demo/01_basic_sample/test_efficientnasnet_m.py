@@ -202,9 +202,9 @@ if __name__ == '__main__':
     img_file = cv2.imread('./zebra_cls.jpg')
     h, w = get_hw(models[0].inputs[0].properties)
     des_dim = (w, h)
-    # resized_data = cv2.resize(img_file, des_dim, interpolation=cv2.INTER_AREA)
-    # nv12_data = bgr2nv12_opencv(resized_data)
-    nv12_data = process_image(img_file, h, w)
+    resized_data = cv2.resize(img_file, des_dim, interpolation=cv2.INTER_AREA)
+    nv12_data = bgr2nv12_opencv(resized_data)
+    # nv12_data = process_image(img_file, h, w)
 
     outputs = models[0].forward(nv12_data)
 
@@ -234,10 +234,10 @@ if __name__ == '__main__':
             output_tensors[i].sysMem[0].virAddr = ctypes.cast(outputs[i].buffer.ctypes.data_as(ctypes.POINTER(ctypes.c_int32)), ctypes.c_void_p)
 
         for j in range(len(outputs[i].properties.shape)):
-            # output_tensors[i].properties.validShape.numDimensions = len(outputs[i].properties.shape)
-            # output_tensors[i].properties.validShape.dimensionSize[j] = outputs[i].properties.shape[j]
-            output_tensors[i].properties.validShape = ctypes.cast(outputs[i].properties.validShape, ctypes.POINTER(hbDNNTensorShape_t)).contents
-            output_tensors[i].properties.alignedShape = ctypes.cast(outputs[i].properties.alignedShape, ctypes.POINTER(hbDNNTensorShape_t)).contents
+            output_tensors[i].properties.validShape.numDimensions = len(outputs[i].properties.shape)
+            output_tensors[i].properties.validShape.dimensionSize[j] = outputs[i].properties.shape[j]
+            # output_tensors[i].properties.validShape = ctypes.cast(outputs[i].properties.validShape, ctypes.POINTER(hbDNNTensorShape_t)).contents
+            # output_tensors[i].properties.alignedShape = ctypes.cast(outputs[i].properties.alignedShape, ctypes.POINTER(hbDNNTensorShape_t)).contents
 
         libpostprocess.ClassificationDoProcess(output_tensors[i], ctypes.pointer(classification_postprocess_info), i)
 
